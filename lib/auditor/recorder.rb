@@ -26,7 +26,6 @@ module Auditor
       audit.auditable_type = model.class.name
       audit.audited_changes = prepare_changes(model.changes) if model.changed?
       audit.action = action
-
       return if noop?(audit)
 
       audit.comment = @blk.call(model, user, action) if @blk
@@ -36,6 +35,9 @@ module Auditor
         audit.owner_id = owner.id
         audit.owner_type = owner.class.name
       end
+
+      # added by Michael Chapman to create a text description
+      audit.description = build_description(audit).to_s
 
       @options[:fail_on_error] ? audit.save! : audit.save
     end
